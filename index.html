@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Info</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="HTML5 website template">
+  <meta name="keywords" content="global, template, html, sass, jquery">
+  <meta name="author" content="Bucky Maler">
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/index.css" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/form.css">
+  <link rel="stylesheet" href="assets/css/chart.css">
+</head>
+
+<body>
+  <div class="perspective effect-rotate-left">
+    <div class="container" id="mytop">
+      <div class="outer-nav--return"></div>
+      <div id="viewport" class="l-viewport">
+        <div class="l-wrapper">
+          <header class="header">
+            <a class="header--logo" href="./index.html">
+              <img src="assets/img/logo.png" alt="Info">
+              <p>首页</p>
+            </a>
+            <div class="header--nav-toggle">
+              <span></span>
+            </div>
+          </header>
+          <nav class="l-side-nav">
+            <ul class="side-nav">
+              <li class="is-active"><span>Search</span></li>
+              <li><span>Results</span></li>
+              <li><span>Charts</span></li>
+            </ul>
+          </nav>
+          <div class="t1"></div>
+          <ul class="l-main-content main-content">
+            <li class="l-section section section--is-active">
+              <!-- 主体区域 -->
+              <section id="todoapp">
+                <!-- 输入框 -->
+                <header id="myheader">
+                  <p class="title">covid-19 info search</p>
+                  <div class="search-form">
+                    <div id="search-bd" class="search-bd">
+                      <ul>
+                        <li class="blue1" :class="{selected : choose == 1}" @click="News">搜新闻</li>
+                        <li class="blue2" :class="{selected : choose == 2}" @click="Rumor">搜谣言</li>
+                        <li class="blue3" :class="{selected : choose == 3}" @click="Comment">搜微博</li>
+                      </ul>
+                    </div>
+                    <div id="search-hd" class="search-hd">
+                      <div class="search-bg"></div>
+                      <input type="text" id="s1" class="search-input" v-model="inputValue" @input="suggest"
+                        @keyup.enter="search" autofocus="autofocus" autocomplete="off" placeholder="请在此输入想搜索的新闻">
+                      <input type="text" id="s2" class="search-input" v-model="inputValue" @input="suggest"
+                        @keyup.enter="search" autofocus="autofocus" autocomplete="off" placeholder="请在此输入想搜索的谣言">
+                      <input type="text" id="s3" class="search-input" v-model="inputValue" @input="suggest"
+                        @keyup.enter="search" autofocus="autofocus" autocomplete="off" placeholder="请在此输入想搜索的微博">
+                      <el-date-picker class="block" v-model="value" type="daterange" range-separator="至"
+                        start-placeholder="开始日期" end-placeholder="结束日期" unlink-panels>
+                      </el-date-picker>
+                      <button id="submit" class="btn-search" value="搜索" @click="search">搜索</button>
+                    </div>
+                  </div>
+                </header>
+                <!-- 列表区域 -->
+                <div class="main">
+                  <ul class="todo-list">
+                    <li class="todo" v-for="(item,index) in list">
+                      <div class="view">
+                        <span class="index" @click="setInput(index)">{{ index+1 }}.</span>
+                        <label @click="setInput(index)">{{ item }}</label>
+                        <button class="destroy" @click="remove(index)"></button>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <!-- 统计和清空 -->
+                <footer class="footer" v-show="list.length!=0">
+                  <span class="todo-count">
+                    <strong>{{ list.length }}</strong> items left
+                  </span>
+                  <button v-show="list.length!=0" class="clear-completed" @click="clear">
+                    Clear
+                  </button>
+                </footer>
+              </section>
+            </li>
+            <li class="l-section section">
+              <div id="form">
+                <div class="left">
+                  <el-button type="success" plain @click="loadprovince">全球</el-button>
+                  <el-dropdown>
+                    <el-button type="primary" plain>
+                      国内<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item v-for="sel in selectList" @click.native="loadcity(sel)">{{sel}}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
+                <el-table :data="tableData" height="500" v-if="choose == 0">
+                  <el-table-column type="expand" v-if="choose == 0">
+                    <template slot-scope="props">
+                      <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item label="洲名">
+                          <span>{{ props.row.continentName }}</span>
+                        </el-form-item>
+                        <el-form-item label="国名">
+                          <span>{{ props.row.countryName }}</span>
+                        </el-form-item>
+                        <el-form-item label="省名">
+                          <span>{{ props.row.provinceName }}</span>
+                        </el-form-item>
+                        <el-form-item label="总确诊人数">
+                          <span>{{ props.row.confirmedCount }}</span>
+                        </el-form-item>
+                        <el-form-item label="现存人数">
+                          <span>{{ props.row.currentConfirmedCount }}</span>
+                        </el-form-item>
+                        <el-form-item label="疑似人数">
+                          <span>{{ props.row.suspectedCount }}</span>
+                        </el-form-item>
+                        <el-form-item label="治愈人数">
+                          <span>{{ props.row.curedCount }}</span>
+                        </el-form-item>
+                        <el-form-item label="死亡人数">
+                          <span>{{ props.row.deadCount }}</span>
+                        </el-form-item>
+                        <el-form-item label="更新时间">
+                          <span>{{ props.row.updateTime }}</span>
+                        </el-form-item>
+                      </el-form>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="国名" prop="countryName">
+                  </el-table-column>
+                  <el-table-column label="省名" prop="provinceName">
+                  </el-table-column>
+                  <el-table-column label="总确诊人数" prop="confirmedCount">
+                  </el-table-column>
+                  <el-table-column label="现存确诊人数" prop="currentConfirmedCount">
+                  </el-table-column>
+                  <el-table-column label="更新时间" prop="updateTime">
+                  </el-table-column>
+                </el-table>
+                <div v-if="choose == 1" class="left">
+                  <div
+                    class="el-table el-table--fit el-table--scrollable-x el-table--enable-row-hover el-table--enable-row-transition"
+                    style="height: 500px;">
+                    <div class="el-table__header-wrapper">
+                      <table cellspacing="0" cellpadding="0" class="el-table__header" style="width: 100%;">
+                        <thead class="has-gutter">
+                          <tr class="">
+                            <th colspan="1" rowspan="1" class="el-table_1_column_1     is-leaf">
+                              <div class="cell">名称</div>
+                            </th>
+                            <th colspan="1" rowspan="1" class="el-table_1_column_2     is-leaf">
+                              <div class="cell">总确诊人数</div>
+                            </th>
+                            <th colspan="1" rowspan="1" class="el-table_1_column_3     is-leaf">
+                              <div class="cell">现存确诊人数</div>
+                            </th>
+                            <th colspan="1" rowspan="1" class="el-table_1_column_4     is-leaf">
+                              <div class="cell">疑似人数</div>
+                            </th>
+                            <th colspan="1" rowspan="1" class="el-table_1_column_5     is-leaf">
+                              <div class="cell">治愈人数</div>
+                            </th>
+                            <th colspan="1" rowspan="1" class="el-table_1_column_6     is-leaf">
+                              <div class="cell">死亡人数</div>
+                            </th>
+                            <th class="gutter" style="width: 0px; display: none;"></th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    <div class="el-table__body-wrapper is-scrolling-left" style="height: 431px;">
+                      <table cellspacing="0" cellpadding="0" class="el-table__body" style="width: 100%;">
+                        <tbody>
+                          <tr class="el-table__row" v-for="city in cityData">
+                            <td rowspan="1" colspan="1" class="el-table_1_column_1  ">
+                              <div class="cell">{{city.cityName}}</div>
+                            </td>
+                            <td rowspan="1" colspan="1" class="el-table_1_column_2  ">
+                              <div class="cell">{{city.confirmedCount}}</div>
+                            </td>
+                            <td rowspan="1" colspan="1" class="el-table_1_column_3  ">
+                              <div class="cell">{{city.currentConfirmedCount}}</div>
+                            </td>
+                            <td rowspan="1" colspan="1" class="el-table_1_column_4  ">
+                              <div class="cell">{{city.suspectedCount}}</div>
+                            </td>
+                            <td rowspan="1" colspan="1" class="el-table_1_column_5  ">
+                              <div class="cell">{{city.curedCount}}</div>
+                            </td>
+                            <td rowspan="1" colspan="1" class="el-table_1_column_6  ">
+                              <div class="cell">{{city.deadCount}}</div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="el-table__column-resize-proxy" style="display: none;"></div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="l-section section">
+              <div id="charts">
+                <div class="chart-pos">
+                  <el-dropdown>
+                    <el-button type="primary" plain>
+                      省份<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item v-for="province in provinceList" @click.native="loadcity(province)">{{province}}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                  <el-dropdown v-if="cityData.length > 0">
+                    <el-button type="primary" plain>
+                      城市<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item v-for="city in cityData" @click.native="setOpt(city)">{{city.cityName}}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                  <div id="chart" style="width:500px;height:400px;"></div>
+                </div>
+                <div class="map-pos">
+                  <div id="map" style="width: 600px;height:440px;"></div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <ul class="outer-nav">
+      <li class="is-active">Search</li>
+      <li>Results</li>
+      <li>Charts</li>
+    </ul>
+  </div>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.0/echarts.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+  <!-- 引入组件库 -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <!-- 官网提供的 axios 在线地址 -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/javascript">
+    Date.prototype.Format = function (fmt) {
+      var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+      };
+      if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+      for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : ((
+          "00" + o[k]).substr(("" + o[k]).length)));
+      return fmt;
+    };
+    // 实例化vue
+    var app = new Vue({
+      el: "#todoapp",
+      data: {
+        list: [],
+        inputValue: "",
+        choose: 1,
+        value: ''
+      },
+      methods: {
+        remove: function (index) {
+          this.list.splice(index, 1);
+        },
+        clear: function () {
+          this.list = [];
+        },
+        setInput: function (index) {
+          this.inputValue = this.list[index]
+          this.list = ''
+        },
+        News: function () {
+          this.choose = 1
+          this.list = ''
+          this.inputValue = ''
+        },
+        Rumor: function () {
+          this.choose = 2
+          this.list = ''
+          this.inputValue = ''
+        },
+        Comment: function () {
+          this.choose = 3
+          this.list = ''
+          this.inputValue = ''
+        },
+        suggest: function () {
+          if (this.inputValue != '') {
+            var words = 'http://119.3.52.214:8080/suggest?keyword=' + this.inputValue + '&type='
+            if (this.choose == 1) {
+              words += 'news'
+            } else if (this.choose == 2) {
+              words += 'rumor'
+            } else if (this.choose == 3) {
+              words += 'weibo'
+            }
+            axios.get(words).then(response => {
+              this.list = response.data
+              for (let i = 0; i < this.list.length; i++) {
+                this.list[i] = this.list[i].replace(/[\-\_\,\!\|\~\`\(\)\#\$\%\^\&\*\{\}\:\;\"\L\<\>\?]/g, '')
+                  .slice(0, 50)
+              }
+            })
+          } else {
+            this.list = ''
+          }
+        },
+        search: function () {
+          if (this.value != '') {
+            window.localStorage.setItem('time', this.value)
+            this.value = ''
+          }
+          window.localStorage.setItem('choose', this.choose);
+          window.localStorage.setItem('input', this.inputValue);
+          this.inputValue = '';
+          window.location.href = './result.html';
+        },
+      }
+    })
+    var form = new Vue({
+      el: "#form",
+      data: {
+        choose: 0,
+        tableData: [],
+        cityData: '',
+        selectList: [
+          "安徽省",
+          "澳门",
+          "北京市",
+          "重庆市",
+          "福建省",
+          "甘肃省",
+          "广东省",
+          "广西壮族自治区",
+          "贵州省",
+          "海南省",
+          "河北省",
+          "河南省",
+          "黑龙江省",
+          "湖北省",
+          "湖南省",
+          "吉林省",
+          "江苏省",
+          "江西省",
+          "辽宁省",
+          "内蒙古自治区",
+          "宁夏回族自治区",
+          "青海省",
+          "山东省",
+          "山西省",
+          "陕西省",
+          "上海市",
+          "四川省",
+          "台湾",
+          "天津市",
+          "西藏自治区",
+          "香港",
+          "新疆维吾尔自治区",
+          "云南省",
+          "浙江省",
+          "中国"
+        ],
+      },
+      created: function () {
+        this.loadprovince()
+      },
+      methods: {
+        timeformat: function (time) {
+          return (new Date(time).Format("yyyy-MM-dd hh:mm:ss"))
+        },
+        tableRowClassName({
+          row,
+          rowIndex
+        }) {
+          if (rowIndex % 2 == 0) {
+            return 'warning-row';
+          } else if (rowIndex % 3 == 0) {
+            return 'main-row';
+          } else if (rowIndex % 4 == 0) {
+            return 'success-row';
+          }
+          return '';
+        },
+        loadprovince: function () {
+          this.choose = 0
+          if (this.tableData.length == 0) {
+            axios.get('https://lab.isaaclin.cn/nCoV/api/area').then(response => {
+              this.tableData = response.data.results
+              for (let i = 0; i < this.tableData.length; i++) {
+                this.tableData[i].updateTime = this.timeformat(this.tableData[i].updateTime)
+              }
+            })
+          }
+        },
+        loadcity: function (str) {
+          this.choose = 1
+          axios.get('https://lab.isaaclin.cn/nCoV/api/area?province=' + str).then(response => {
+            var table = response.data.results[0]
+            var city = {}
+            city.cityName = table.provinceName
+            city.currentConfirmedCount = table.currentConfirmedCount
+            city.confirmedCount = table.confirmedCount
+            city.suspectedCount = table.suspectedCount
+            city.curedCount = table.curedCount
+            city.deadCount = table.deadCount
+            table.updateTime = this.timeformat(table.updateTime)
+            if (table.cities == null) {
+              table.cities = []
+            }
+            table.cities.push(city)
+            this.cityData = table.cities.reverse()
+          })
+        },
+      }
+    })
+    var form = new Vue({
+      el: "#charts",
+      data: {
+        chart: '',
+        map: '',
+        option: '',
+        cityData: [],
+        overall: [],
+        detail: [],
+        updateTime: '',
+        provinceList: [
+          "安徽省",
+          "澳门",
+          "北京市",
+          "重庆市",
+          "福建省",
+          "甘肃省",
+          "广东省",
+          "广西壮族自治区",
+          "贵州省",
+          "海南省",
+          "河北省",
+          "河南省",
+          "黑龙江省",
+          "湖北省",
+          "湖南省",
+          "吉林省",
+          "江苏省",
+          "江西省",
+          "辽宁省",
+          "内蒙古自治区",
+          "宁夏回族自治区",
+          "青海省",
+          "山东省",
+          "山西省",
+          "陕西省",
+          "上海市",
+          "四川省",
+          "台湾",
+          "天津市",
+          "西藏自治区",
+          "香港",
+          "新疆维吾尔自治区",
+          "云南省",
+          "浙江省",
+          "中国"
+        ],
+      },
+      created: function () {},
+      mounted: function () {
+        var that = this
+        // 基于准备好的dom，初始化echarts实例
+        this.chart = echarts.init(document.getElementById('chart'));
+        this.map = echarts.init(document.getElementById('map'));
+        // 指定图表的配置项和数据
+        this.option = {
+          title: {
+            text: '',
+            subtext: '',
+          },
+          tooltip: {
+            trigger: 'axis'
+          },
+          legend: {
+            data: ['人数']
+          },
+          toolbox: {
+            show: true,
+            feature: {
+              mark: {
+                show: true
+              },
+              dataView: {
+                show: true,
+                readOnly: false
+              },
+              magicType: {
+                show: true,
+                type: ['line', 'bar']
+              },
+              restore: {
+                show: true
+              },
+              saveAsImage: {
+                show: true
+              }
+            }
+          },
+          calculable: true,
+          xAxis: [{
+            type: 'category',
+            data: ['总确诊人数', '现存人数', '疑似人数', '治愈人数', '死亡人数']
+          }],
+          yAxis: [{
+            type: 'value'
+          }],
+          series: [{
+            name: '人数',
+            type: 'bar',
+            data: '',
+            itemStyle: {
+              normal: {
+                color: function (params) {
+                  // build a color map as your need.
+                  var colorList = [
+                    '#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
+                    '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD',
+                    '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
+                  ];
+                  return colorList[params.dataIndex]
+                },
+                label: {
+                  show: true,
+                  position: 'top',
+                  formatter: '{b}\n{c}'
+                }
+              }
+            }
+          }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        this.chart.setOption(this.option);
+        // this.map.setOption(this.option);
+
+        setTimeout(function () {
+          that.loadcity('中国');
+        }, 1500);
+
+        setTimeout(function () {
+          that.loadall();
+        }, 3000);
+      },
+      methods: {
+        timeformat: function (time) {
+          return (new Date(time).Format("yyyy-MM-dd hh:mm:ss"))
+        },
+        loadcity: function (str) {
+          axios.get('https://lab.isaaclin.cn/nCoV/api/area?province=' + str).then(response => {
+            var table = response.data.results[0]
+            table.updateTime = this.timeformat(table.updateTime)
+            var cities = []
+            var city = {}
+            city.data = []
+            city.cityName = table.provinceName
+            city.updateTime = table.updateTime
+            city.data.push(table.confirmedCount)
+            city.data.push(table.currentConfirmedCount)
+            city.data.push(table.suspectedCount)
+            city.data.push(table.curedCount)
+            city.data.push(table.deadCount)
+            cities.push(city)
+            if (table.cities != null) {
+              for (let i = 0; i < table.cities.length; i++) {
+                var city = {}
+                city.data = []
+                city.cityName = table.cities[i].cityName
+                city.updateTime = table.updateTime
+                city.data.push(table.cities[i].confirmedCount)
+                city.data.push(table.cities[i].currentConfirmedCount)
+                city.data.push(table.cities[i].suspectedCount)
+                city.data.push(table.cities[i].curedCount)
+                city.data.push(table.cities[i].deadCount)
+                cities.push(city)
+              }
+            }
+            this.cityData = cities
+            this.setOpt(this.cityData[0])
+          })
+        },
+        loadall: function () {
+          axios.get('https://lab.isaaclin.cn/nCoV/api/area').then(response => {
+            var tableData = response.data.results
+            this.updateTime = this.timeformat(tableData[0].updateTime)
+            for (let i = 0; i < tableData.length; i++) {
+              if (tableData[i].countryName == '中国' && tableData[i].provinceName != '中国') {
+                // tableData[i].provinceName = tableData[i].provinceName.replace(/省|市|自治区|特别行政区|壮族|回族|维吾尔/g,"")               
+                var all = {}
+                all.name = tableData[i].provinceShortName
+                all.value = tableData[i].confirmedCount
+                this.overall.push(all)
+                // console.log(this.overall)
+                var info = {}
+                info.value = []
+                info.name = tableData[i].provinceShortName
+                var obj1 = {}
+                var obj2 = {}
+                var obj3 = {}
+                var obj4 = {}
+                var obj5 = {}
+                obj1.name = "总确诊人数"
+                obj1.value = tableData[i].confirmedCount
+                info.value.push(obj1)
+                obj2.name = "现存人数"
+                obj2.value = tableData[i].currentConfirmedCount
+                info.value.push(obj2)
+                obj3.name = "疑似人数"
+                obj3.value = tableData[i].suspectedCount
+                info.value.push(obj3)
+                obj4.name = "治愈人数"
+                obj4.value = tableData[i].curedCount
+                info.value.push(obj4)
+                obj5.name = "死亡人数"
+                obj5.value = tableData[i].deadCount
+                info.value.push(obj5)
+                this.detail.push(info)
+              }
+            }
+            this.setMap()
+          })
+          // console.log(this.overall)
+          // console.log(this.detail)
+        },
+        setOpt: function (city) {
+          this.option.title.text = city.cityName + '疫情数据'
+          this.option.title.subtext = '更新时间：' + city.updateTime
+          this.option.series[0].data = city.data
+          this.chart.setOption(this.option);
+        },
+        setMap: function (city) {
+          var that = this
+          var name_title = "全国各省疫情状况分布图"
+          var subname = '更新时间：' + this.updateTime
+          var nameColor = " rgb(55, 75, 113)"
+          var name_fontFamily = '等线'
+          var subname_fontSize = 15
+          var name_fontSize = 18
+          var mapName = 'china'
+          var geoCoordMap = {};
+          var toolTipData = this.detail
+          /*获取地图数据*/
+          this.map.showLoading();
+          var mapFeatures = echarts.getMap(mapName).geoJson.features;
+          this.map.hideLoading();
+          mapFeatures.forEach(function (v) {
+            // 地区名称
+            var name = v.properties.name;
+            // 地区经纬度
+            geoCoordMap[name] = v.properties.cp;
+          });
+          // console.log("============geoCoordMap===================")
+          // console.log(geoCoordMap)
+          // console.log("================data======================")
+          // console.log(data)
+          // console.log(toolTipData)
+          var max = 480,
+            min = 9; // todo 
+          var maxSize4Pin = 10,
+            minSize4Pin = 2;
+
+          var res = [];
+          for (var i = 0; i < that.overall.length; i++) {
+            var geoCoord = geoCoordMap[that.overall[i].name];
+            // console.log(geoCoord)
+            if (geoCoord) {
+              // console.log(geoCoord.concat(that.overall[i].value))
+              res.push({
+                name: that.overall[i].name,
+                value: geoCoord.concat(that.overall[i].value),
+              });
+            }
+          }
+          // console.log(res)
+
+          var temp = that.overall.sort(function (a, b) {
+            return b.value - a.value;
+          }).slice(0, 5)
+          
+          var rest = [];
+          for (var i = 0; i < temp.length; i++) {
+            var geoCoord = geoCoordMap[temp[i].name];
+            // console.log(geoCoord)
+            if (geoCoord) {
+              // console.log(geoCoord.concat(that.overall[i].value))
+              rest.push({
+                name: temp[i].name,
+                value: geoCoord.concat(temp[i].value),
+              });
+            }
+          }
+          // console.log(rest)
+          
+
+          option = {
+            title: {
+              text: name_title,
+              subtext: subname,
+              x: 'center',
+              textStyle: {
+                color: nameColor,
+                fontFamily: name_fontFamily,
+                fontSize: name_fontSize
+              },
+              subtextStyle: {
+                fontSize: subname_fontSize,
+                fontFamily: name_fontFamily
+              }
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: function (params) {
+                if (typeof (params.value)[2] == "undefined") {
+                  var toolTiphtml = ''
+                  for (var i = 0; i < toolTipData.length; i++) {
+                    if (params.name == toolTipData[i].name) {
+                      toolTiphtml += toolTipData[i].name + ':<br>'
+                      for (var j = 0; j < toolTipData[i].value.length; j++) {
+                        toolTiphtml += toolTipData[i].value[j].name + ':' + toolTipData[i].value[j]
+                          .value + "<br>"
+                      }
+                    }
+                  }
+                  // console.log(toolTiphtml)
+                  return toolTiphtml;
+                } else {
+                  var toolTiphtml = ''
+                  for (var i = 0; i < toolTipData.length; i++) {
+                    if (params.name == toolTipData[i].name) {
+                      toolTiphtml += toolTipData[i].name + ':<br>'
+                      for (var j = 0; j < toolTipData[i].value.length; j++) {
+                        toolTiphtml += toolTipData[i].value[j].name + ':' + toolTipData[i].value[j]
+                          .value + "<br>"
+                      }
+                    }
+                  }
+                  // console.log(toolTiphtml)
+                  return toolTiphtml;
+                }
+              }
+            },
+            visualMap: {
+              show: true,
+              min: 0,
+              max: 70000,
+              left: 'left',
+              top: 'bottom',
+              text: ['高', '低'], // 文本，默认为数值文本
+              calculable: true,
+              seriesIndex: [1],
+              inRange: {
+                // color: ['#3B5077', '#031525'] // 蓝黑
+                // color: ['#ffc0cb', '#800080'] // 红紫
+                // color: ['#3C3B3F', '#605C3C'] // 黑绿
+                // color: ['#0f0c29', '#302b63', '#24243e'] // 黑紫黑
+                // color: ['#23074d', '#cc5333'] // 紫红
+                color: ['#00467F', '#A5CC82'] // 蓝绿
+                // color: ['#1488CC', '#2B32B2'] // 浅蓝
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+                // color: ['#00467F', '#A5CC82'] // 蓝绿
+
+              }
+            },
+            /*工具按钮组*/
+            // toolbox: {
+            //     show: true,
+            //     orient: 'vertical',
+            //     left: 'right',
+            //     top: 'center',
+            //     feature: {
+            //         dataView: {
+            //             readOnly: false
+            //         },
+            //         restore: {},
+            //         saveAsImage: {}
+            //     }
+            // },
+            geo: {
+              show: true,
+              map: mapName,
+              label: {
+                normal: {
+                  show: false
+                },
+                emphasis: {
+                  show: false,
+                }
+              },
+              roam: true,
+              itemStyle: {
+                normal: {
+                  areaColor: '#031525',
+                  borderColor: '#3B5077',
+                },
+                emphasis: {
+                  areaColor: '#2B91B7',
+                }
+              }
+            },
+            series: [{
+                name: '散点',
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                data: res,
+                symbolSize: function (val) {
+                  return 10;
+                },
+                label: {
+                  normal: {
+                    formatter: '{b}',
+                    position: 'right',
+                    show: true
+                  },
+                  emphasis: {
+                    show: true
+                  }
+                },
+                itemStyle: {
+                  normal: {
+                    color: '#05C3F9'
+                  }
+                }
+              },
+              {
+                type: 'map',
+                map: mapName,
+                geoIndex: 0,
+                aspectScale: 0.75, //长宽比
+                showLegendSymbol: false, // 存在legend时显示
+                label: {
+                  normal: {
+                    show: true
+                  },
+                  emphasis: {
+                    show: false,
+                    textStyle: {
+                      color: '#fff'
+                    }
+                  }
+                },
+                roam: true,
+                itemStyle: {
+                  normal: {
+                    areaColor: '#031525',
+                    borderColor: '#3B5077',
+                  },
+                  emphasis: {
+                    areaColor: '#2B91B7'
+                  }
+                },
+                animation: false,
+                data: that.overall
+              },
+              {
+                name: '点',
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                symbol: 'pin', //气泡
+                symbolSize: function (val) {
+                  return 40;
+                },
+                label: {
+                  normal: {
+                    show: true,
+                    textStyle: {
+                      color: '#fff',
+                      fontSize: 12,
+                    }
+                  }
+                },
+                itemStyle: {
+                  normal: {
+                    color: '#F62157', //标志颜色
+                  }
+                },
+                zlevel: 6,
+                data: res,
+              },
+              {
+                name: 'Top 5',
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                data: rest,
+                symbolSize: function (val) {
+                  return 10;
+                },
+                showEffectOn: 'render',
+                rippleEffect: {
+                  brushType: 'stroke'
+                },
+                hoverAnimation: true,
+                label: {
+                  normal: {
+                    formatter: '{b}',
+                    position: 'right',
+                    show: true
+                  }
+                },
+                itemStyle: {
+                  normal: {
+                    color: 'yellow',
+                    shadowBlur: 10,
+                    shadowColor: 'yellow'
+                  }
+                },
+                zlevel: 1
+              },
+
+            ]
+          };
+          this.map.setOption(option);
+        },
+      }
+    })
+  </script>
+  <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script>
+    window.jQuery || document.write('<script src="assets/js/vendor/jquery-2.2.4.min.js"><\/script>')
+  </script>
+  <script src="assets/js/functions-min.js"></script>
+</body>
+
+</html>

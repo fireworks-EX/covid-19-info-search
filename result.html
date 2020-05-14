@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <title></title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/result.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
+</head>
+
+<body>
+    <div id="page">
+        <div class="nav-fixed">
+            <div class="search-form">
+                <div id="search-bd" class="search-bd">
+                    <ul>
+                        <li class="blue1" :class="{selected : choose == 1}" @click="init(1)">搜新闻</li>
+                        <li class="blue2" :class="{selected : choose == 2}" @click="init(2)">搜谣言</li>
+                        <li class="blue3" :class="{selected : choose == 3}" @click="init(3)">搜微博</li>
+                    </ul>
+                </div>
+                <div id="search-hd" class="search-hd">
+                    <div class="search-bg"></div>
+                    <input type="text" id="s1" class="search-input" v-model="inputValue" @keyup.enter="search"
+                        @input="suggest" autofocus="autofocus" autocomplete="off" placeholder="请在此输入想搜索的新闻">
+                    <input type="text" id="s2" class="search-input" v-model="inputValue" @keyup.enter="search"
+                        @input="suggest" autofocus="autofocus" autocomplete="off" placeholder="请在此输入想搜索的谣言">
+                    <input type="text" id="s3" class="search-input" v-model="inputValue" @keyup.enter="search"
+                        @input="suggest" autofocus="autofocus" autocomplete="off" placeholder="请在此输入想搜索的微博">
+                    <el-date-picker class="block block-time" v-model="value" type="daterange" range-separator="~"
+                        start-placeholder="开始日期" end-placeholder="结束日期" unlink-panels @focus="clear">
+                    </el-date-picker>
+                    <button id="submit" class="btn-search" value="搜索" @click="search">搜索</button>
+                </div>
+                <ul class="todo-list">
+                    <li class="todo" v-for="(item,index) in list">
+                        <div class="view">
+                            <span class="index" @click="setInput(index)">{{ index+1 }}.</span>
+                            <label @click="setInput(index)">{{ item }}</label>
+                            <button class="destroy" @click="remove(index)"></button>
+                        </div>
+                    </li>
+                </ul>
+                <div class="footer" v-show="list.length!=0">
+                    <span class="todo-count">
+                        <strong>{{ list.length }}</strong> items left
+                    </span>
+                    <button v-show="list.length!=0" class="clear-completed" @click="clear">
+                        Clear
+                    </button>
+                </div>
+            </div>
+            <div class="right-label" v-if="choose == 2">
+                <el-radio-group v-model="radio" @change="type">
+                    <el-radio-button label="全部"></el-radio-button>
+                    <el-radio-button label="真"></el-radio-button>
+                    <el-radio-button label="假"></el-radio-button>
+                    <el-radio-button label="疑"></el-radio-button>
+                </el-radio-group>
+            </div>
+            <div class="pos-right">
+                <a href="/index.html">首页</a>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div class="mycard">
+            <div class="card-wrap" v-if="choose == 3">
+                <div class="card" v-for="item in data">
+                    <div class="avator">
+                        <img :src="item.user.profile_image_url"></img>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <p class="name" v-html="item.user.screen_name"></p>
+                        </div>
+                        <p class="txt" v-html="item.text"></p>
+                        <div>
+                            <ul class="pic">
+                                <li v-for="pic in item.pics">
+                                    <img :src="pic" />
+                                </li>
+                            </ul>
+                        </div>
+                        <p class="other">{{item.created_at}} · 转发 {{item.reposts_count}} · 评论 {{item.comments_count}} ·
+                            点赞 {{item.attitudes_count}} </p>
+                    </div>
+                </div>
+            </div>
+            <div class="rumor-wrap" v-if="choose == 2">
+                <div class="card" v-for="item in data">
+                    <div class="pics">
+                        <img :src="item.coverimg"></img>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <p class="title" v-html="item.title"></p>
+                        </div>
+                        <div class="right">
+                            <img :src="item.src">
+                        </div>
+                        <p class="txt" v-html="item.abstract"></p>
+                        <p class="other">{{item.date}} · from {{item.author}}【{{item.authordesc}}】</p>
+                        <p class="tag">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tags:</p>
+                        <el-tag v-for="(tag,index) in item.tag.split(',')" :class="tags" type="success" v-html="tag"></el-tag>
+                        </el-tag>
+                    </div>
+                </div>
+            </div>
+            <div class="news-wrap" v-if="choose == 1">
+                <br>
+                <br>
+                <el-timeline v-show="data.length != 0">
+                    <el-timeline-item v-for="news in data">
+                        <el-card class="elcard">
+                            <h4 v-html="news.title"></h4>
+                            <p v-html="news.summary"></p>
+                            <br>
+                            <p class="others">{{news.pubDate}} · from {{news.infoSource}}</p>
+                        </el-card>
+                    </el-timeline-item>
+                    </el-timeline-item>
+                </el-timeline>
+            </div>
+            <div class="history-wrap">
+                <el-card class="box-card" v-if="inputList.length!=0">
+                    <div slot="header" class="clearfix">
+                        <span><strong>最近搜索：</strong></span>
+                        <el-button style="float: right; padding: 3px 0" type="text" @click="clearall">清空</el-button>
+                    </div>
+                    <div v-for="(its,index) in inputList" class="text item" @click="sethistory(index)">
+                        {{index+1}}. {{its.content}}
+                    </div>
+                </el-card>
+            </div>
+        </div>
+        <div class="demo" id="footernav" v-show="isshow">
+            <ul class="pagination pagination_type2">
+                <li class="pagination__item"><a href="#0" class="pagination__number"><span
+                            class="pagination__control pagination__control_prev" @click="prev"
+                            v-show="pagenum>1">prev</span></a></li>
+                <li v-for="num in part" class="pagination__item"><a href="#0" class="pagination__number"
+                        :class="{pagination__number_active : num == pagenum}" @click="getpagenum(num)">{{num}}</a></li>
+                <li class="pagination__item"><a href="#0" class="pagination__number"><span
+                            class="pagination__control pagination__control_next" @click="next"
+                            v-show="pagenum<page">next</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!-- 官网提供的 axios 在线地址 -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        // 设置axios的基地址
+        axios.defaults.baseURL = 'http://119.3.52.214:8080';
+        new Vue({
+            el: "#page",
+            data: {
+                inputValue: "",
+                inputList: [],
+                choose: 1,
+                value: '',
+                list: [],
+                s: "",
+                data: [],
+                page: "",
+                pagelist: [],
+                part: [],
+                pagenum: 1,
+                isshow: false,
+                radio: '全部'
+            },
+            created: function () {
+                if (window.localStorage.getItem('inputList') != null) {
+                    this.inputList = JSON.parse(window.localStorage.getItem('inputList'))
+                }
+                if (window.localStorage.getItem('input') != '' && window.localStorage.getItem('input') !=
+                    null) {
+                    this.inputValue = window.localStorage.getItem('input');
+                    this.choose = window.localStorage.getItem('choose');
+                    if (window.localStorage.getItem('time') != null) {
+                        this.value = window.localStorage.getItem('time').split(',')
+                        window.localStorage.removeItem('time')
+                    }
+                    window.localStorage.removeItem('input')
+                    window.localStorage.removeItem('choose')
+                    this.search()
+                }
+            },
+            methods: {
+                timeformat: function (time) {
+                    var d = new Date(time);
+                    var datetime = d.getFullYear() + '-' + (d.getMonth() + 1).toString().padStart(2, '0') +
+                        '-' + d.getDate().toString().padStart(2, '0');
+                    return datetime
+                },
+                remove: function (index) {
+                    this.list.splice(index, 1);
+                },
+                clear: function () {
+                    this.list = [];
+                },
+                clearall: function () {
+                    this.inputList = [];
+                    window.localStorage.removeItem('inputList')
+                },
+                setInput: function (index) {
+                    this.inputValue = this.list[index]
+                    this.list = ''
+                },
+                sethistory: function (index) {
+                    this.inputValue = this.inputList[index].content
+                    this.choose = this.inputList[index].select
+                    this.value = this.inputList[index].range
+                    this.search()
+                },
+                type: function () {
+                    this.search()
+                },
+                init: function (i) {
+                    this.choose = i
+                    this.list = ''
+                    this.inputValue = ''
+                    this.data = []
+                    this.isshow = false
+                },
+                suggest: function () {
+                    if (this.inputValue != '') {
+                        var words = '/suggest?keyword=' + this.inputValue + '&type='
+                        if (this.choose == 1) {
+                            words += 'news'
+                        } else if (this.choose == 2) {
+                            words += 'rumor'
+                        } else if (this.choose == 3) {
+                            words += 'weibo'
+                        }
+                        axios.get(words).then(response => {
+                            this.list = response.data
+                            for (let i = 0; i < this.list.length; i++) {
+                                this.list[i] = this.list[i].replace(
+                                        /[\-\_\,\!\|\~\`\(\)\#\$\%\^\&\*\{\}\:\;\"\L\<\>\?]/g, '')
+                                    .slice(0, 50)
+                            }
+                        })
+                    } else {
+                        this.list = ''
+                    }
+                },
+                search: function () {
+                    var words = ""
+                    if (this.value != '' && this.value != null) {
+                        this.s = "&starttime=" + this.timeformat(this.value[0]) + "&endtime=" + this
+                            .timeformat(this.value[1])
+                    }
+                    if (this.inputValue != '') {
+                        if (this.choose == 1) {
+                            words = '/searchNews?keyword=' + this.inputValue + this.s
+                        } else if (this.choose == 2) {
+                            var type = ""
+                            if (this.radio == '假') {
+                                type = "&type=0"
+                            } else if (this.radio == '疑') {
+                                type = "&type=1"
+                            } else if (this.radio == '真') {
+                                type = "&type=2"
+                            }
+                            words = '/searchRumor/?keyword=' + this.inputValue + this.s + type
+                        } else if (this.choose == 3) {
+                            words = '/searchComment?keyword=' + this.inputValue + this.s
+                        }
+                        axios.get(words).then(response => {
+                            this.data = response.data.data
+                            if (this.choose == 2) {
+                                for (let i = 0; i < this.data.length; i++) {
+                                    if (this.data[i].result == '真') {
+                                        this.data[i].src = './assets/img/0.png'
+                                        console.log(1)
+                                    } else if (this.data[i].result == '假') {
+                                        this.data[i].src = './assets/img/1.png'
+                                    } else {
+                                        this.data[i].src = './assets/img/2.png'
+                                    }
+                                }
+                            }
+                            this.page = Math.round(response.data.totalnum / 10)
+                            this.pagelist = Array.from({
+                                length: this.page
+                            }, (item, pagenum) => pagenum + 1)
+                            if (this.pagelist.length > 10) {
+                                this.part = this.pagelist.slice(0, 10)
+                            } else {
+                                this.part = this.pagelist
+                            }
+                            this.isshow = true
+                        })
+                        this.list = ''
+                        document.body.scrollTop = 0
+                        document.documentElement.scrollTop = 0
+                        var flag = true
+                        for (let i = 0; i < this.inputList.length; i++) {
+                            if (this.inputList[i].content == this.inputValue) {
+                                flag = false
+                                break
+                            }
+                        }
+                        if (flag) {
+                            var inputinfo = {}
+                            inputinfo.content = this.inputValue
+                            inputinfo.select = this.choose
+                            inputinfo.range = this.value
+                            if (this.inputList.length <= 10) {
+                                this.inputList.push(inputinfo)
+                            } else {
+                                this.inputList.shift()
+                                this.inputList.push(inputinfo)
+                            }
+                            window.localStorage.setItem('inputList', JSON.stringify(this.inputList))
+                            console.log(this.inputList, JSON.stringify(this.inputList))
+                        }
+                    }
+                },
+                onlySetData: function (s) {
+                    var words = ""
+                    if (this.choose == 1) {
+                        words = '/searchNews?keyword=' + this.inputValue + '&page=' + this.pagenum + s
+                    } else if (this.choose == 2) {
+                        var type = ""
+                        if (this.radio == '假') {
+                            type = "&type=0"
+                        } else if (this.radio == '疑') {
+                            type = "&type=1"
+                        } else if (this.radio == '真') {
+                            type = "&type=2"
+                        }
+                        words = '/searchRumor/?keyword=' + this.inputValue + '&page=' + this.pagenum + s +
+                            type
+                    } else if (this.choose == 3) {
+                        words = '/searchComment?keyword=' + this.inputValue + '&page=' + this.pagenum + s
+                    }
+                    axios.get(words).then(response => {
+                        this.data = response.data.data
+                        if (this.choose == 2) {
+                            for (let i = 0; i < this.data.length; i++) {
+                                if (this.data[i].result == '真') {
+                                    this.data[i].src = './assets/img/0.png'
+                                    console.log(1)
+                                } else if (this.data[i].result == '假') {
+                                    this.data[i].src = './assets/img/1.png'
+                                } else {
+                                    this.data[i].src = './assets/img/2.png'
+                                }
+                            }
+                        }
+                    })
+                    this.list = ''
+                    document.body.scrollTop = 0
+                    document.documentElement.scrollTop = 0
+                },
+                prev() {
+                    this.pagenum--;
+                    if ((this.pagenum - 2) > -1 && this.pagenum == this.part[0]) {
+                        this.part = this.pagelist.slice(this.pagenum - 2, this.pagenum + 8)
+                    }
+                    this.onlySetData(this.s)
+                },
+                next() {
+                    this.pagenum++;
+                    if ((this.pagenum + 1) < this.page && this.pagenum == this.part[9]) {
+                        this.part = this.pagelist.slice(this.pagenum - 9, this.pagenum + 1)
+                    }
+                    this.onlySetData(this.s)
+                },
+                getpagenum(i) {
+                    this.pagenum = i
+                    if ((this.pagenum - 2) > -1 && this.pagenum == this.part[0]) {
+                        this.part = this.pagelist.slice(this.pagenum - 2, this.pagenum + 8)
+                    } else if ((this.pagenum + 1) < this.page && this.pagenum == this.part[9]) {
+                        this.part = this.pagelist.slice(this.pagenum - 9, this.pagenum + 1)
+                    }
+                    this.onlySetData(this.s)
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

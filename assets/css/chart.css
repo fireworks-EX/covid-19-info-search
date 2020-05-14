@@ -1,0 +1,21 @@
+.chart-pos {
+  width: 40%;
+  /* background-color: #fff; */
+  margin-top: 80px;
+  margin-left: 90px;
+  float: left;
+  padding: 7px;
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+}
+
+.map-pos {
+  width: 49%;
+  /* background-color: #fff; */
+  float: left;
+  margin-top: 80px;
+  margin-left: 10px;
+  padding: 7px;
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+}
