@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   <link rel="stylesheet" type="text/css" href="assets/css/index.css" />
   <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="assets/css/form.css">
+  <link rel="stylesheet" href="assets/css/tables.css">
   <link rel="stylesheet" href="assets/css/chart.css">
 </head>
 
@@ -35,11 +35,12 @@
           <nav class="l-side-nav">
             <ul class="side-nav">
               <li class="is-active"><span>Search</span></li>
-              <li><span>Results</span></li>
+              <li><span>News</span></li>
+              <li><span>Tables</span></li>
               <li><span>Charts</span></li>
+              <li><span>Feeling</span></li>
             </ul>
           </nav>
-          <div class="t1"></div>
           <ul class="l-main-content main-content">
             <li class="l-section section section--is-active">
               <!-- 主体区域 -->
@@ -94,7 +95,26 @@
               </section>
             </li>
             <li class="l-section section">
-              <div id="form">
+              <div id="news" class="mycontainer" data-ripple>
+                <section class="mycard-wrap">
+                  <div class="head">
+                    <Strong>Latest News</Strong>
+                  </div>
+                  <div style="height: 400px;overflow-y: auto;">
+                    <div v-for="news in newsList" class="text news news-card">
+                      <a target="_blank" :href="news.sourceUrl"
+                        class="no-underline"><strong>{{news.title}}</strong></a><br>
+                      <div><a target="_blank" :href="news.sourceUrl" class="no-underline">{{news.summary}}</a>
+                        <br><a target="_blank" :href="news.sourceUrl" class="no-underline">from {{news.infoSource}} ·
+                          {{news.pubDateStr}}</a>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </li>
+            <li class="l-section section">
+              <div id="tables">
                 <div class="left">
                   <el-button type="success" plain @click="loadprovince">全球</el-button>
                   <el-dropdown>
@@ -107,7 +127,7 @@
                     </el-dropdown-menu>
                   </el-dropdown>
                 </div>
-                <el-table :data="tableData" height="500" v-if="choose == 0">
+                <el-table :data="tableData" height="430" v-if="choose == 0">
                   <el-table-column type="expand" v-if="choose == 0">
                     <template slot-scope="props">
                       <el-form label-position="left" inline class="demo-table-expand">
@@ -155,7 +175,7 @@
                 <div v-if="choose == 1" class="left">
                   <div
                     class="el-table el-table--fit el-table--scrollable-x el-table--enable-row-hover el-table--enable-row-transition"
-                    style="height: 500px;">
+                    style="height: 430px;">
                     <div class="el-table__header-wrapper">
                       <table cellspacing="0" cellpadding="0" class="el-table__header" style="width: 100%;">
                         <thead class="has-gutter">
@@ -235,10 +255,47 @@
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
-                  <div id="chart" style="width:500px;height:400px;"></div>
+                  <div id="chart" style="width:500px;height:350px;"></div>
                 </div>
                 <div class="map-pos">
-                  <div id="map" style="width: 600px;height:440px;"></div>
+                  <el-button type="primary" plain class="over-btn" @click='detailmap'>详细</el-button>
+                  <div id="map" style="width: 500px;height:390px;"></div>
+                </div>
+              </div>
+            </li>
+            <li class="l-section section">
+              <div id="cloud">
+                <div class="feel-pos">
+                  <el-dropdown>
+                    <el-button type="primary" plain>
+                      月份<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item v-for="month in monthList" @click.native="setFeeling(month)">{{month}}月
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                  <div id="linepie" style="width:600px;height:400px;" class="left"></div>
+                  <div id="wordcloud" style="width:350px;height:350px;margin-top: 30px;" class="left"></div>
+                </div>
+                <div class="over" v-if="news.length>0">
+                  <el-card class="box-card" shadow="hover" style="width: 400px;">
+                    <div slot="header" class="clearfix">
+                      <span><strong>NEWS</strong></span>
+                      <el-button style="float: right; padding: 3px 0; color: red;" type="text" @click="closeNews">X
+                      </el-button>
+                    </div>
+                    <div style="height: 200px;overflow-y: auto;">
+                      <div v-for="item in news" class="text item news-card">
+                        <a target="_blank" :href="item.sourceUrl"
+                          class="no-underline"><strong>{{item.title}}</strong></a><br>
+                        <div><a target="_blank" :href="item.sourceUrl" class="no-underline">{{item.summary}}</a>
+                          <br><a target="_blank" :href="item.sourceUrl" class="no-underline">from {{item.infoSource}}
+                            {{item.pubDate}}</a>
+                        </div>
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
               </div>
             </li>
@@ -248,14 +305,17 @@
     </div>
     <ul class="outer-nav">
       <li class="is-active">Search</li>
-      <li>Results</li>
+      <li>News</li>
+      <li>Tables</li>
       <li>Charts</li>
+      <li>Feeling</li>
     </ul>
   </div>
   <!-- 开发环境版本，包含了有帮助的命令行警告 -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.0/echarts.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+  <script src="./assets/js/echarts-wordcloud.min.js"></script>
   <!-- 引入组件库 -->
   <script src="https://unpkg.com/element-ui/lib/index.js"></script>
   <!-- 官网提供的 axios 在线地址 -->
@@ -345,8 +405,25 @@
         },
       }
     })
-    var form = new Vue({
-      el: "#form",
+    var news = new Vue({
+      el: "#news",
+      data: {
+        newsList: [],
+      },
+      created: function () {
+        this.setNewsList()
+      },
+      methods: {
+        setNewsList: function () {
+          axios.get('http://119.3.52.214:8080/realTimeData/').then(
+            response => {
+              this.newsList = response.data.news
+            })
+        },
+      }
+    })
+    var tables = new Vue({
+      el: "#tables",
       data: {
         choose: 0,
         tableData: [],
@@ -441,7 +518,7 @@
         },
       }
     })
-    var form = new Vue({
+    var charts = new Vue({
       el: "#charts",
       data: {
         chart: '',
@@ -507,28 +584,28 @@
           legend: {
             data: ['人数']
           },
-          toolbox: {
-            show: true,
-            feature: {
-              mark: {
-                show: true
-              },
-              dataView: {
-                show: true,
-                readOnly: false
-              },
-              magicType: {
-                show: true,
-                type: ['line', 'bar']
-              },
-              restore: {
-                show: true
-              },
-              saveAsImage: {
-                show: true
-              }
-            }
-          },
+          // toolbox: {
+          //   show: true,
+          //   feature: {
+          //     mark: {
+          //       show: true
+          //     },
+          //     dataView: {
+          //       show: true,
+          //       readOnly: false
+          //     },
+          //     magicType: {
+          //       show: true,
+          //       type: ['line', 'bar']
+          //     },
+          //     restore: {
+          //       show: true
+          //     },
+          //     saveAsImage: {
+          //       show: true
+          //     }
+          //   }
+          // },
           calculable: true,
           xAxis: [{
             type: 'category',
@@ -707,7 +784,7 @@
           var temp = that.overall.sort(function (a, b) {
             return b.value - a.value;
           }).slice(0, 5)
-          
+
           var rest = [];
           for (var i = 0; i < temp.length; i++) {
             var geoCoord = geoCoordMap[temp[i].name];
@@ -721,7 +798,7 @@
             }
           }
           // console.log(rest)
-          
+
 
           option = {
             title: {
@@ -794,20 +871,6 @@
 
               }
             },
-            /*工具按钮组*/
-            // toolbox: {
-            //     show: true,
-            //     orient: 'vertical',
-            //     left: 'right',
-            //     top: 'center',
-            //     feature: {
-            //         dataView: {
-            //             readOnly: false
-            //         },
-            //         restore: {},
-            //         saveAsImage: {}
-            //     }
-            // },
             geo: {
               show: true,
               map: mapName,
@@ -942,6 +1005,415 @@
             ]
           };
           this.map.setOption(option);
+        },
+        detailmap: function () {
+          window.location.href = './detail.html';
+        }
+      }
+    })
+    var feeling = new Vue({
+      el: "#cloud",
+      data: {
+        linepie: '',
+        option1: '',
+        wordcloud: '',
+        option2: '',
+        words: '',
+        monthList: [1, 2, 4],
+        yue: '',
+        news: []
+      },
+      created: function () {},
+      mounted: function () {
+        this.linepie = echarts.init(document.getElementById('linepie'));
+        this.wordcloud = echarts.init(document.getElementById('wordcloud'));
+        var maskImage = new Image();
+        //重点：云彩图片的base64码
+        maskImage.src =
+          'data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjI1NnB4IiBoZWlnaHQ9IjI1NnB4IiB2aWV3Qm94PSIwIDAgNTQ4LjE3NiA1NDguMTc2IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1NDguMTc2IDU0OC4xNzY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8cGF0aCBkPSJNNTI0LjE4MywyOTcuMDY1Yy0xNS45ODUtMTkuODkzLTM2LjI2NS0zMi42OTEtNjAuODE1LTM4LjM5OWM3LjgxLTExLjk5MywxMS43MDQtMjUuMTI2LDExLjcwNC0zOS4zOTkgICBjMC0yMC4xNzctNy4xMzktMzcuNDAxLTIxLjQwOS01MS42NzhjLTE0LjI3My0xNC4yNzItMzEuNDk4LTIxLjQxMS01MS42NzUtMjEuNDExYy0xOC4yNzEsMC0zNC4wNzEsNS45MDEtNDcuMzksMTcuNzAzICAgYy0xMS4yMjUtMjcuMDI4LTI5LjA3NS00OC45MTctNTMuNTI5LTY1LjY2N2MtMjQuNDYtMTYuNzQ2LTUxLjcyOC0yNS4xMjUtODEuODAyLTI1LjEyNWMtNDAuMzQ5LDAtNzQuODAyLDE0LjI3OS0xMDMuMzUzLDQyLjgzICAgYy0yOC41NTMsMjguNTQ0LTQyLjgyNSw2Mi45OTktNDIuODI1LDEwMy4zNTFjMCwyLjg1NiwwLjE5MSw2Ljk0NSwwLjU3MSwxMi4yNzVjLTIyLjA3OCwxMC4yNzktMzkuODc2LDI1LjgzOC01My4zODksNDYuNjg2ICAgQzYuNzU5LDI5OS4wNjcsMCwzMjIuMDU1LDAsMzQ3LjE4YzAsMzUuMjExLDEyLjUxNyw2NS4zMzMsMzcuNTQ0LDkwLjM1OWMyNS4wMjgsMjUuMDMzLDU1LjE1LDM3LjU0OCw5MC4zNjIsMzcuNTQ4aDMxMC42MzYgICBjMzAuMjU5LDAsNTYuMDk2LTEwLjcxNSw3Ny41MTItMzIuMTIxYzIxLjQxMy0yMS40MTIsMzIuMTIxLTQ3LjI0OSwzMi4xMjEtNzcuNTE1ICAgQzU0OC4xNzIsMzM5Ljc1Nyw1NDAuMTc0LDMxNi45NTIsNTI0LjE4MywyOTcuMDY1eiIgZmlsbD0iI0ZGRkZGRiIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=';
+
+        this.option1 = {
+          color: ["#00ffa1", "#00fcff", "#f0e751", "#ff9f7f", "#fb7293", "#E062AE", "#E690D1", "#e7bcf3",
+            "#9d96f5", "#8378EA", "#96BFFF"
+          ],
+          legend: [{
+            show: true,
+            top: '10%',
+            right: '2%',
+            textStyle: {
+              fontSize: 12,
+              color: '#000'
+            },
+            data: ['乐观', '平静', '悲伤', "愤怒", "担忧"]
+          }],
+          graphic: { //图形中间文字
+            type: "text",
+            right: 65,
+            top: "center",
+            style: {
+              text: '',
+              textAlign: "center",
+              fill: "#000",
+              fontSize: 10
+            }
+          },
+          grid: {
+            left: '10%',
+            top: '25%',
+            width: '60%',
+            height: '50%'
+          },
+          dataZoom: [{
+              show: true,
+              realtime: true,
+              start: 0,
+              end: 10,
+            },
+            {
+              type: 'inside',
+              realtime: true,
+              start: 0,
+              end: 10,
+            }
+          ],
+          tooltip: {
+            trigger: 'axis'
+          },
+          // toolbox: {
+          //   feature: {
+          //     mark: {
+          //       show: true
+          //     },
+          //     dataView: {
+          //       show: true,
+          //       readOnly: false
+          //     },
+          //     restore: {
+          //       show: true
+          //     },
+          //     saveAsImage: {
+          //       show: true
+          //     }
+          //   }
+          // },
+          xAxis: {
+            type: 'category',
+            data: '',
+            boundaryGap: false,
+            axisLabel: {
+              interval: 0,
+            }
+          },
+          yAxis: {
+            name: '情感统计',
+            type: 'value',
+          },
+          series: [{
+            name: '乐观',
+            smooth: true,
+            type: 'line',
+            lineStyle: {
+              normal: {
+                width: 2, //设置线宽
+                shadowColor: 'rgba(0,0,0,0.4)'
+              }
+            },
+            data: ''
+          }, {
+            name: '平静',
+            smooth: true,
+            type: 'line',
+            lineStyle: {
+              normal: {
+                width: 2, //设置线宽
+                shadowColor: 'rgba(0,0,0,0.4)'
+              }
+            },
+            data: ''
+          }, {
+            name: '悲伤',
+            smooth: true,
+            type: 'line',
+            lineStyle: {
+              normal: {
+                width: 2, //设置线宽
+                shadowColor: 'rgba(0,0,0,0.4)'
+              }
+            },
+            data: ''
+          }, {
+            name: '愤怒',
+            smooth: true,
+            type: 'line',
+            lineStyle: {
+              normal: {
+                width: 2, //设置线宽
+                shadowColor: 'rgba(0,0,0,0.4)'
+              }
+            },
+            data: ''
+          }, {
+            name: '担忧',
+            smooth: true,
+            type: 'line',
+            lineStyle: {
+              normal: {
+                width: 2, //设置线宽
+                shadowColor: 'rgba(0,0,0,0.4)'
+              }
+            },
+            data: ''
+          }, {
+            type: 'pie',
+            center: ['84%', '50%'],
+            radius: ['20%', '25%'],
+            labelLine: {
+              normal: {
+                length: 10,
+                length2: 5,
+                show: true
+              }
+            },
+            label: {
+              normal: {
+                formatter: '{d} %',
+                textStyle: {
+                  color: '#87CEFA',
+                  fontSize: 10
+                }
+              },
+            },
+            color: ['#39cad4', '#51ebb3', '#f9f48e', '#fba790', '#21b4f6', '#F136AF', '#FF875C', ],
+            data: [{
+              name: '乐观',
+              value: ''
+            }, {
+              name: '平静',
+              value: ''
+            }, {
+              name: '悲伤',
+              value: ''
+            }, {
+              name: '愤怒',
+              value: ''
+            }, {
+              name: '担忧',
+              value: ''
+            }]
+          }]
+        };
+
+        this.option2 = {
+          tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+          },
+          series: [{
+            type: 'wordCloud',
+            gridSize: 1,
+            sizeRange: [12, 55],
+            rotationRange: [-45, 0, 45, 90],
+            maskImage: maskImage,
+            textStyle: {
+              normal: {
+                color: function () {
+                  return 'rgb(' +
+                    Math.round(Math.random() * 255) +
+                    ', ' + Math.round(Math.random() * 255) +
+                    ', ' + Math.round(Math.random() * 255) + ')'
+                }
+              }
+            },
+
+            left: 'center',
+            top: 'center',
+            right: null,
+            bottom: null,
+            width: '90%',
+            height: '110%',
+            data: []
+          }]
+        }
+
+        this.setFeeling(1)
+      },
+      methods: {
+        setFeeling: function (n) {
+          var that = this
+          var r1 = [];
+          var r2 = [];
+          var r3 = [];
+          var r4 = [];
+          var r5 = [];
+          var MyDate = [];
+          this.yue = n
+          axios.get('http://119.3.52.214:8080/sentimentPredict/?month=' + n).then(response => {
+            var feeling = response.data.typeCount
+            for (let i = 0; i < feeling.length; i++) {
+              MyDate.push(feeling[i].date)
+              r1.push(feeling[i].value.乐观)
+              r2.push(feeling[i].value.平静)
+              r3.push(feeling[i].value.悲伤)
+              r4.push(feeling[i].value.愤怒)
+              r5.push(feeling[i].value.担忧)
+            }
+            this.option1.xAxis.data = MyDate
+            this.option1.graphic.style.text = MyDate[0]
+            this.option1.series[0].data = r1
+            this.option1.series[1].data = r2
+            this.option1.series[2].data = r3
+            this.option1.series[3].data = r4
+            this.option1.series[4].data = r5
+            this.option1.series[5].data[0] = r1[0]
+            this.option1.series[5].data[1] = r2[0]
+            this.option1.series[5].data[2] = r3[0]
+            this.option1.series[5].data[3] = r4[0]
+            this.option1.series[5].data[4] = r5[0]
+
+            this.linepie.off('click')
+            // 点击事件
+            this.linepie.on('click', function (params) {
+              if (params.componentType === 'series' && params.seriesType === 'line') {
+                var dataIndex = params.dataIndex;
+                that.linepie.setOption({
+                  graphic: { //图形中间文字
+                    type: "text",
+                    right: 65,
+                    top: "center",
+                    style: {
+                      text: MyDate[dataIndex],
+                      textAlign: "center",
+                      fill: "#000",
+                      fontSize: 10
+                    }
+                  },
+                  series: [{
+                    name: '乐观',
+                    smooth: true,
+                    type: 'line',
+                    lineStyle: {
+                      normal: {
+                        width: 2, //设置线宽
+                        shadowColor: 'rgba(0,0,0,0.4)'
+                      }
+                    },
+                    data: r1
+                  }, {
+                    name: '平静',
+                    smooth: true,
+                    type: 'line',
+                    lineStyle: {
+                      normal: {
+                        width: 2, //设置线宽
+                        shadowColor: 'rgba(0,0,0,0.4)'
+                      }
+                    },
+                    data: r2
+                  }, {
+                    name: '悲伤',
+                    smooth: true,
+                    type: 'line',
+                    lineStyle: {
+                      normal: {
+                        width: 2, //设置线宽
+                        shadowColor: 'rgba(0,0,0,0.4)'
+                      }
+                    },
+                    data: r3
+                  }, {
+                    name: '愤怒',
+                    smooth: true,
+                    type: 'line',
+                    lineStyle: {
+                      normal: {
+                        width: 2, //设置线宽
+                        shadowColor: 'rgba(0,0,0,0.4)'
+                      }
+                    },
+                    data: r4
+                  }, {
+                    name: '担忧',
+                    smooth: true,
+                    type: 'line',
+                    lineStyle: {
+                      normal: {
+                        width: 2, //设置线宽
+                        shadowColor: 'rgba(0,0,0,0.4)'
+                      }
+                    },
+                    data: r5
+                  }, {
+                    type: 'pie',
+                    center: ['84%', '50%'],
+                    radius: ['20%', '25%'],
+                    labelLine: {
+                      normal: {
+                        length: 10,
+                        length2: 5,
+                        show: true
+                      }
+                    },
+                    label: {
+                      normal: {
+                        formatter: '{d} %',
+                        textStyle: {
+                          color: '#87CEFA',
+                          fontSize: 10
+                        }
+                      },
+                    },
+                    color: ['#39cad4', '#51ebb3', '#f9f48e', '#fba790', '#21b4f6',
+                      '#F136AF', '#FF875C',
+                    ],
+                    data: [{
+                      name: '乐观',
+                      value: r1[dataIndex]
+                    }, {
+                      name: '平静',
+                      value: r2[dataIndex]
+                    }, {
+                      name: '悲伤',
+                      value: r3[dataIndex]
+                    }, {
+                      name: '愤怒',
+                      value: r4[dataIndex]
+                    }, {
+                      name: '担忧',
+                      value: r5[dataIndex]
+                    }]
+                  }]
+                })
+              }
+              that.setCloud(MyDate[dataIndex])
+            });
+
+            this.linepie.setOption(this.option1);
+
+            if (n == 1) {
+              this.words = '2020-01-01'
+            } else if (n == 2) {
+              this.words = '2020-02-01'
+            } else if (n == 4) {
+              this.words = '2020-04-01'
+            }
+            this.setCloud(this.words)
+          })
+        },
+        setCloud: function (str) {
+          axios.get('http://119.3.52.214:8080/sentimentWordCount?month=' + this.yue + '&date=' + str).then(
+            response => {
+              this.option2.series[0].data = response.data
+              this.wordcloud.setOption(this.option2)
+              this.setNews(str)
+            })
+        },
+        setNews: function (str) {
+          axios.get('http://119.3.52.214:8080/newsbydate/?date=' + str).then(
+            response => {
+              this.news = response.data.data
+            })
+        },
+        closeNews: function (str) {
+          this.news = []
         },
       }
     })

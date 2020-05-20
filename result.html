@@ -73,14 +73,14 @@
         <div class="mycard">
             <div class="card-wrap" v-if="choose == 3">
                 <div class="card" v-for="item in data">
-                    <div class="avator">
+                    <a class="avator" target="_blank" :href="item.user.profile_url" style="text-decoration: none;">
                         <img :src="item.user.profile_image_url"></img>
-                    </div>
+                    </a>
                     <div class="content">
                         <div class="info">
-                            <p class="name" v-html="item.user.screen_name"></p>
+                            <a class="name" target="_blank" :href="item.url" style="text-decoration: none;" v-html="item.user.screen_name"></a>
                         </div>
-                        <p class="txt" v-html="item.text"></p>
+                        <a class="txt" target="_blank" :href="item.url" style="text-decoration: none;margin-left: 30px;" v-html="item.text"></a>
                         <div>
                             <ul class="pic">
                                 <li v-for="pic in item.pics">
@@ -100,12 +100,15 @@
                     </div>
                     <div class="content">
                         <div class="info">
-                            <p class="title" v-html="item.title"></p>
+                            <a style=" text-decoration: none;" class="title" target="_blank" :href="item.url" v-html="item.title"></a>
                         </div>
                         <div class="right">
                             <img :src="item.src">
                         </div>
-                        <p class="txt" v-html="item.abstract"></p>
+                        <div class="txt">
+                            <a style=" text-decoration: none;" target="_blank" :href="item.url" v-html="item.abstract"></a>
+                            <br><a style=" text-decoration: none;" target="_blank" :href="item.url" v-html="item.text"></a>
+                        </div>
                         <p class="other">{{item.date}} · from {{item.author}}【{{item.authordesc}}】</p>
                         <p class="tag">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tags:</p>
                         <el-tag v-for="(tag,index) in item.tag.split(',')" :class="tags" type="success" v-html="tag"></el-tag>
@@ -119,8 +122,8 @@
                 <el-timeline v-show="data.length != 0">
                     <el-timeline-item v-for="news in data">
                         <el-card class="elcard">
-                            <h4 v-html="news.title"></h4>
-                            <p v-html="news.summary"></p>
+                            <a target="_blank" :href="news.sourceUrl" style="text-decoration: none; color: gray; font-size: 20px;" v-html="news.title"></a><br>
+                            <a target="_blank" :href="news.sourceUrl" style="text-decoration: none;" v-html="news.summary"></a>
                             <br>
                             <p class="others">{{news.pubDate}} · from {{news.infoSource}}</p>
                         </el-card>

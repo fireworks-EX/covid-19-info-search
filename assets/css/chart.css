@@ -4,18 +4,90 @@
   margin-top: 80px;
   margin-left: 90px;
   float: left;
-  padding: 7px;
+  padding: 10px;
   border-radius: 3px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
 }
 
 .map-pos {
-  width: 49%;
+  width: 45%;
   /* background-color: #fff; */
   float: left;
   margin-top: 80px;
   margin-left: 10px;
-  padding: 7px;
+  padding: 10px;
   border-radius: 3px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+}
+
+.feel-pos {
+  width: 90%;
+  /* background-color: #fff; */
+  margin-top: 80px;
+  margin-left: 90px;
+  float: left;
+  padding: 10px;
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+}
+
+.over {
+  position: absolute;
+  top: 120px;
+  left: 125px;
+  opacity: 0.9;
+  z-index: 9999;
+}
+
+.over-btn {
+  position: absolute;
+  top: 90px;
+  right: 50px;
+  opacity: 0.9;
+  z-index: 9999;
+}
+
+.news-card {
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+  padding: 1px;
+  border-radius: 3px;
+  margin: 5px;
+}
+
+.no-underline {
+  text-decoration:none;
+  word-break:break-all;
+  color: grey;
+}
+
+.mycontainer {
+  margin-left: 100px;
+  margin-top: 50px;
+  width: 85%;
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  align-items: center;
+}
+
+.mycard-wrap {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  transition: all .5s ease;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+}
+
+.mycard-wrap .head {
+  background: #3388E4;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
 }

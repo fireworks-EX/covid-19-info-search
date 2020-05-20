@@ -77,7 +77,7 @@ body {
 .pos-right {
   position: relative;
   float: right;
-  margin-right: 150px;
+  margin-right: 100px;
   margin-top: 25px;
   display: block;
   white-space: nowrap;
@@ -273,7 +273,7 @@ body {
 
 .right-label {
   float: left;
-  margin-left: 860px;
+  margin-left: 800px;
   margin-top: 25px;
 }
 

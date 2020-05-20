@@ -1,0 +1,18 @@
+body {
+  background-color: #f0f8ff;
+}
+
+.detail-pos {
+  height: 550px;
+  width: 1200px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+}
+
+.over-btn {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  opacity: 0.9;
+  z-index: 9999;
+}
