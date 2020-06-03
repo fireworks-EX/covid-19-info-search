@@ -23,10 +23,16 @@
       <div class="outer-nav--return"></div>
       <div id="viewport" class="l-viewport">
         <div class="l-wrapper">
-          <header class="header">
+          <header id="user" class="header">
             <a class="header--logo" href="./index.html">
               <img src="assets/img/logo.png" alt="Info">
               <p>首页</p>
+            </a>
+            <a href="./login.html" class="logopos" v-if="token == ''">
+              <img src="assets/img/login.png" class="logo" alt="Login">
+            </a>
+            <a href="./user.html" class="logopos" v-if="token != ''">
+              <img src="assets/img/user.png" class="logo" alt="Login">
             </a>
             <div class="header--nav-toggle">
               <span></span>
@@ -313,7 +319,8 @@
   </div>
   <!-- 开发环境版本，包含了有帮助的命令行警告 -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.0/echarts.min.js"></script>
+  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.0/echarts.min.js"></script> -->
+  <script crossorigin="anonymous" integrity="sha384-lAfs3gPoFmOvFV4CK3X6XDt/t9jmgUS/dgmas42hDBFL5QEfQ/Y2ZNZYk57/3oQp" src="https://lib.baomitu.com/echarts/3.8.0/echarts.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
   <script src="./assets/js/echarts-wordcloud.min.js"></script>
   <!-- 引入组件库 -->

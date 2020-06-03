@@ -64,6 +64,9 @@
                 </el-radio-group>
             </div>
             <div class="pos-right">
+                <a href="./user.html" v-if="token != ''">
+                    <img src="assets/img/user.png" class="logo" alt="Login">
+                </a>
                 <a href="/index.html">首页</a>
             </div>
         </div>
@@ -72,15 +75,17 @@
         <br>
         <div class="mycard">
             <div class="card-wrap" v-if="choose == 3">
-                <div class="card" v-for="item in data">
+                <div class="card" v-for="item in data" @click="postweibo(item._id)">
                     <a class="avator" target="_blank" :href="item.user.profile_url" style="text-decoration: none;">
                         <img :src="item.user.profile_image_url"></img>
                     </a>
                     <div class="content">
                         <div class="info">
-                            <a class="name" target="_blank" :href="item.url" style="text-decoration: none;" v-html="item.user.screen_name"></a>
+                            <a class="name" target="_blank" :href="item.url" style="text-decoration: none;"
+                                v-html="item.user.screen_name"></a>
                         </div>
-                        <a class="txt" target="_blank" :href="item.url" style="text-decoration: none;margin-left: 30px;" v-html="item.text"></a>
+                        <a class="txt" target="_blank" :href="item.url" style="text-decoration: none;margin-left: 30px;"
+                            v-html="item.text"></a>
                         <div>
                             <ul class="pic">
                                 <li v-for="pic in item.pics">
@@ -94,24 +99,27 @@
                 </div>
             </div>
             <div class="rumor-wrap" v-if="choose == 2">
-                <div class="card" v-for="item in data">
+                <div class="card" v-for="item in data" @click="postrumor(item._id)">
                     <div class="pics">
                         <img :src="item.coverimg"></img>
                     </div>
                     <div class="content">
                         <div class="info">
-                            <a style=" text-decoration: none;" class="title" target="_blank" :href="item.url" v-html="item.title"></a>
+                            <a style=" text-decoration: none;" class="title" target="_blank" :href="item.url"
+                                v-html="item.title"></a>
                         </div>
                         <div class="right">
                             <img :src="item.src">
                         </div>
                         <div class="txt">
-                            <a style=" text-decoration: none;" target="_blank" :href="item.url" v-html="item.abstract"></a>
-                            <br><a style=" text-decoration: none;" target="_blank" :href="item.url" v-html="item.text"></a>
+                            <a style=" text-decoration: none;" target="_blank" :href="item.url"
+                                v-html="item.abstract"></a>
+                            <br><a style=" text-decoration: none;" target="_blank" :href="item.url"
+                                v-html="item.text"></a>
                         </div>
                         <p class="other">{{item.date}} · from {{item.author}}【{{item.authordesc}}】</p>
                         <p class="tag">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tags:</p>
-                        <el-tag v-for="(tag,index) in item.tag.split(',')" :class="tags" type="success" v-html="tag"></el-tag>
+                        <el-tag v-for="(tag,index) in item.tag.split(',')" type="success" v-html="tag"></el-tag>
                         </el-tag>
                     </div>
                 </div>
@@ -121,13 +129,15 @@
                 <br>
                 <el-timeline v-show="data.length != 0">
                     <el-timeline-item v-for="news in data">
-                        <el-card class="elcard">
-                            <a target="_blank" :href="news.sourceUrl" style="text-decoration: none; color: gray; font-size: 20px;" v-html="news.title"></a><br>
-                            <a target="_blank" :href="news.sourceUrl" style="text-decoration: none;" v-html="news.summary"></a>
+                        <el-card class="elcard" @click.native="postnews(news._id)">
+                            <a target="_blank" :href="news.sourceUrl"
+                                style="text-decoration: none; color: gray; font-size: 20px;"
+                                v-html="news.title"></a><br>
+                            <a target="_blank" :href="news.sourceUrl" style="text-decoration: none;"
+                                v-html="news.summary"></a>
                             <br>
                             <p class="others">{{news.pubDate}} · from {{news.infoSource}}</p>
                         </el-card>
-                    </el-timeline-item>
                     </el-timeline-item>
                 </el-timeline>
             </div>

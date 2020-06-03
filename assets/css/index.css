@@ -4,6 +4,17 @@
   list-style: none;
 }
 
+.logopos {
+  position: absolute;
+  left: 100px;
+}
+
+.logo {
+  height: 30px;
+  width: 30px;
+  border-radius: 30px;
+}
+
 .block {
   width: 40%;
   height: 40px;

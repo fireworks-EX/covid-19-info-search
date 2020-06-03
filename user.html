@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <link rel="stylesheet" type="text/css" href="assets/css/userindex.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/userstyle.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title></title>
+</head>
+
+<body>
+    <div id="userpage">
+        <div id="content" class="wrap">
+            <div class="header"><a href="index.html">首页</a></div>
+            <div class="nav">
+                <ul>
+                    <li class="list">
+                        <h2><i></i>功能</h2>
+                        <div class="hide">
+                            <p @click="history">浏览记录</p>
+                            <p @click="recommendation">个性推荐</p>
+                        </div>
+                    </li>
+                    <li class="list">
+                        <h2><i></i>设置</h2>
+                        <div class="hide">
+                            <p @click="myinfo">个人信息</p>
+                            <p @click="quit">退出登录</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="his" v-if="choose == 1">
+            <el-timeline>
+                <el-timeline-item v-for="item in historyList">
+                    <el-card class="elcard">
+                        <p>from: {{item.h_type}}</p><br>
+                        <p>summary: {{item.summary}}</p><br>
+                        <p>time: {{item.h_time}}</p>
+                    </el-card>
+                </el-timeline-item>
+            </el-timeline>
+        </div>
+        <div class="mycontainer" v-if="choose == 2">
+            <section class="mycard-wrap">
+                <div class="head">
+                    <Strong>Personal Recommendation</Strong>
+                </div>
+                <div style="height: 100%;overflow-y: auto;">
+                    <div v-for="item in recommendList" class="text item item-card">
+                        <a target="_blank" :href="item.sourceUrl"
+                            class="no-underline"><strong>{{item.title}}</strong></a><br>
+                        <div>
+                            <a target="_blank" :href="item.sourceUrl" class="no-underline">{{item.summary}}</a><br>
+                            <a target="_blank" :href="item.sourceUrl" class="no-underline">from {{item.infoSource}} ·
+                                {{item.pubDateStr}}</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="his" v-if="choose == 3">
+            <div>
+                <div>
+                    <h1>关于我</h1>
+                    <h2> 如果debugging是一种消灭bug的过程,那编程就一定是把bug放进去的过程。</h2>
+                </div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td rowspan="6">
+                                    <img src="./assets/img/user.png">
+                                </td>
+                                <td>姓名 | {{userinfo.name}}</td>
+                                <td>手机 | 保密</td>
+
+                            </tr>
+                            <tr>
+                                <td>性别 | 保密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                <td>邮箱 | 保密</td>
+                            </tr>
+                            <tr>
+                                <td>出生 | 保密</td>
+
+                                <td>QQ号 | 保密</td>
+                            </tr>
+                            <tr>
+                                <td>居住 | 保密</td>
+                                <td>户籍 | 保密</td>
+                            </tr>
+                            <tr>
+                                <td>学历 | 保密</td>
+                                <td>学校 | 保密</td>
+                            </tr>
+                            <tr>
+                                <td>专业 | 保密</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<script src="assets/js/login.js"></script>
+</body>
+<footer>
+    <script src="assets/js/index.js"></script>
+</footer>
+
+</html>

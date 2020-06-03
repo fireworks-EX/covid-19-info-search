@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>注册界面</title>
+	<link rel="stylesheet" href="assets/css/reset.css" />
+	<link rel="stylesheet" href="assets/css/common.css" />
+	<link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+
+<body>
+	<div class="wrap login_wrap">
+		<div class="content">
+			<div class="logo"></div>
+			<div id="reg" class="login_box">
+				<el-button type="primary" plain class="over-btn" @click="back">回到首页</el-button>
+				<div class="login_form">
+					<div class="login_title">
+						注册
+					</div>
+					<form action="#" method="post">
+						<div class="form_text_ipt">
+							<input name="username" type="text" placeholder="用户名" v-model="username">
+						</div>
+						<div class="form_text_ipt">
+							<input name="password" type="password" placeholder="密码" v-model="password">
+						</div>
+						<div class="form_text_ipt">
+							<input name="repassword" type="password" placeholder="重复密码" v-model="password2">
+						</div>
+						<div class="form_btn">
+							<el-button type="warning" @click="check">注册</el-button>
+						</div>
+						<div class="form_reg_btn">
+							<span>已有帐号？</span><a href="./login.html">马上登录</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript" src="assets/js/common.js"></script>
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<script src="assets/js/login.js"></script>
+</body>
+
+</html>

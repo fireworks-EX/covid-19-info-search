@@ -1,0 +1,187 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+html,
+body {
+  height: 100%;
+  background-color: #f0f8ff;
+  overflow: hidden;
+}
+a {
+  text-decoration: none;
+  color: #fff;
+}
+.wrap {
+  position: absolute;
+  width: 260px;
+  height: 100%;
+  background-color: #363a45;
+}
+#item {
+  position: absolute;
+  height: 420px;
+  width: 820px;
+  top: 100px;
+  left: 400px;
+  /*border: #FF0000 solid 1px;*/
+}
+.pos {
+  position: absolute;
+}
+#btn0 {
+  top: 150px;
+  left: 1300px;
+}
+#btn1 {
+  top: 250px;
+  left: 1300px;
+}
+#btn2 {
+  top: 350px;
+  left: 1300px;
+}
+.header {
+  width: 100%;
+  height: 65px;
+  background-color: #44495a;
+  font-size: 24px;
+  color: #fff;
+  text-align: center;
+  line-height: 65px;
+}
+.nav {
+  width: 250px;
+  margin: 10px 5px 0;
+}
+.list {
+  margin-bottom: 5px;
+  height: auto;
+}
+.list h2 {
+  position: relative;
+  padding: 15px 0;
+  background-color: #3889d4;
+  text-align: center;
+  font-size: 16px;
+  color: #fff;
+  transition: 0.5s;
+}
+.list h2.on {
+  background-color: #393c4a;
+}
+.list i {
+  position: absolute;
+  right: 10px;
+  top: 16px;
+  border: 8px solid transparent;
+  border-left-color: #fff; /*triangle*/
+  transform: rotate(0deg);
+  transform-origin: 1px 8px;
+  transition: 0.5s;
+}
+.list i.on {
+  transform: rotate(90deg);
+}
+.hide {
+  overflow: hidden;
+  height: 0;
+  transition: 0.5s;
+}
+.hide p {
+  padding: 10px 0;
+  background-color: #282c3a;
+  text-align: center;
+  color: #fff;
+  border-bottom: #42495d;
+}
+.hide p:hover {
+  padding: 10px 0;
+  background-color: #777;
+  text-align: center;
+  color: #fff;
+  border-bottom: #42495d;
+}
+
+.his {
+  position: absolute;
+  top: 30px;
+  left: 300px;
+  width: 70%;
+  height: 90%;
+  overflow-y: auto;
+  padding: 7px;
+}
+
+.mycontainer {
+  position: absolute;
+  top: 10px;
+  left: 270px;
+  width: 75%;
+  max-height: 90%;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  align-items: center;
+}
+
+.mycontainer a{
+	color: #524e4d;
+}
+
+.mycard-wrap {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  transition: all 0.5s ease;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+}
+
+.mycard-wrap .head {
+  background: #3388e4;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+}
+
+.item-card {
+	box-shadow: rgba(0, 0, 0, 0.2) 0 1px 5px 0px;
+	padding: 1px;
+	border-radius: 3px;
+	margin: 5px;
+}
+
+*::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 1px;
+}
+
+*::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 10px;
+  background-color: skyblue;
+  background-image: -webkit-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+}
+
+*::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: #ededed;
+  border-radius: 10px;
+}

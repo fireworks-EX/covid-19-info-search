@@ -15,9 +15,14 @@ new Vue({
         part: [],
         pagenum: 1,
         isshow: false,
-        radio: '全部'
+        radio: '全部',
+        token: ''
     },
     created: function () {
+        if (window.localStorage.getItem('token') != null) {
+            this.token = window.localStorage.getItem('token')
+            this.userinfo = JSON.parse(window.localStorage.getItem('data'))
+        }
         if (window.localStorage.getItem('inputList') != null) {
             this.inputList = JSON.parse(window.localStorage.getItem('inputList'))
         }
@@ -164,6 +169,45 @@ new Vue({
                     window.localStorage.setItem('inputList', JSON.stringify(this.inputList))
                     console.log(this.inputList, JSON.stringify(this.inputList))
                 }
+            }
+        },
+        postnews: function (s) {
+            if (this.token != '') {
+                let data = {
+                    hid: s,
+                    h_type: 'news'
+                }
+                let url = 'http://119.3.52.214:8080/rest/history/?token=' + this.token
+                axios.post(url, data).then(
+                    response => {
+                        console.log(response)
+                    })
+            }
+        },
+        postrumor: function (s) {
+            if (this.token != '') {
+                let data = {
+                    hid: s,
+                    h_type: 'rumor'
+                }
+                let url = 'http://119.3.52.214:8080/rest/history/?token=' + this.token
+                axios.post(url, data).then(
+                    response => {
+                        console.log(response)
+                    })
+            }
+        },
+        postweibo: function (s) {
+            if (this.token != '') {
+                let data = {
+                    hid: s,
+                    h_type: 'weibo'
+                }
+                let url = 'http://119.3.52.214:8080/rest/history/?token=' + this.token
+                axios.post(url, data).then(
+                    response => {
+                        console.log(response)
+                    })
             }
         },
         onlySetData: function (s) {
